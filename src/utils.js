@@ -7,17 +7,29 @@ export default () => {
     .pop();
 };
 
-export const setToken = () => {
+export const setToken = (newValue) => {
   try {
-    const value = window.localStorage.getItem("token");
-
-    if (value) {
-      return JSON.parse(value);
-    } else {
-      window.localStorage.setItem("token", JSON.stringify(defaultValue));
-      return null;
-    }
+    window.localStorage.setItem("token", JSON.stringify(newValue));
   } catch (error) {
-    return null;
+    console.error(error);
+  }
+};
+
+export const checkToken = async () => {
+  const token = await JSON.parse(window.localStorage.getItem("token"));
+  try {
+    const res = await fetch("http://localhost:8080/profile/asd", {
+      method: "POST",
+      headers: {
+        // "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      // body: JSON.stringify({ token: token }),
+      mode: "cors",
+    });
+    return res.ok;
+  } catch (error) {
+    console.error(error);
+    return false;
   }
 };

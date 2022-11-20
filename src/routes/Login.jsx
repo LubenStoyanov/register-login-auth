@@ -1,15 +1,10 @@
 import React from "react";
-import { Form, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { Form, redirect } from "react-router-dom";
+import { setToken } from "../utils";
 
-export default function Login() {
-  const navigate = useNavigate();
-  const { login } = useAuth();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = Object.fromEntries(new FormData(e.currentTarget));
+export const action = async ({ request }) => {
+  try {
+    const formData = Object.fromEntries(await request.formData());
     const res = await fetch("http://localhost:8080/login", {
       method: "POST",
       headers: {
@@ -22,14 +17,17 @@ export default function Login() {
       mode: "cors",
     });
     const token = await res.json();
-    login(token, formData.username);
-    const to = `/profile/${formData.username}`;
-    return () => navigate(to, { replace: true });
-  };
+    setToken(token);
+    return redirect(`/profile/${formData.username}`);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+export default function Login() {
   return (
     <div className="App">
-      <Form onSubmit={handleSubmit}>
+      <Form method="post" action="/login">
         <fieldset
           style={{ display: "flex", flexDirection: "column", rowGap: 10 }}
         >

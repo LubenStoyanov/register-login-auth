@@ -15,6 +15,5 @@ const userSchema = new Schema({
   token: {
     type: String,
   },
-}); // TODO required fields
-
+});
 export const User = mongoose.model("User", userSchema);

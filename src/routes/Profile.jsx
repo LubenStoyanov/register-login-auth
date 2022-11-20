@@ -1,9 +1,17 @@
 import React from "react";
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
+import { checkToken } from "../utils";
 import Logout from "./Logout";
 
 export default function Profile() {
   const { username } = useParams();
+  const navigate = useNavigate();
+
+  (async () => {
+    const token = await checkToken();
+    if (!token) return navigate("/login");
+  })();
+
   return (
     <div>
       <h1>{username}</h1>

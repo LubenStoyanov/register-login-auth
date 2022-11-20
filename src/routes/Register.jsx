@@ -3,7 +3,7 @@ import { Form, redirect } from "react-router-dom";
 export const action = async ({ request }) => {
   try {
     const formData = Object.fromEntries(await request.formData());
-    await fetch("http://localhost:8080/register", {
+    const res = await fetch("http://localhost:8080/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -15,6 +15,9 @@ export const action = async ({ request }) => {
       }),
       mode: "cors",
     });
+
+    console.log(res.ok);
+    if (!res.ok) return redirect("/");
     return redirect(`/login`);
   } catch (error) {
     console.error(error);

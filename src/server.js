@@ -27,6 +27,10 @@ app.post("/register", async (req, res) => {
   console.log("register");
   try {
     const { username, email, password } = req.body;
+    connectDB();
+    const exists = await User.findOne({ email: email });
+    if (exists)
+      return res.status(409).send("User Already Exists. Please Login.");
     const token = jwt.sign({ username: username }, privateKey);
     const hashedPW = await bcrypt.hash(password, saltRounds);
     connectDB();
@@ -63,9 +67,9 @@ app.post("/login", async (req, res) => {
 app.post("/logout", async (req, res) => {
   try {
     console.log("logout");
-    const { username, token } = req.body;
-    console.log(token);
-    await User.updateOne({ username: username }, { $set: { token: "" } });
+    const { username } = req.body;
+    connectDB();
+    await User.updateOne({ username: username }, { $set: { token: null } });
     res.sendStatus(200);
   } catch (error) {
     console.error(error);
@@ -73,9 +77,10 @@ app.post("/logout", async (req, res) => {
   }
 });
 
-app.get("/profile/:username", validateToken, (req, res) => {
+app.post("/profile/:username", validateToken, (req, res) => {
   console.log("Token is valid.");
-  console.log(req.username.username);
+  console.log(req.username);
+  res.sendStatus(200);
 });
 
 app.listen(port, () =>

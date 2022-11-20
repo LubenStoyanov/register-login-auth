@@ -4,50 +4,37 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./routes/Root";
 import Register, { action as registerAction } from "./routes/Register";
-import Login from "./routes/Login";
+import Login, { action as loginAction } from "./routes/Login";
 import Profile from "./routes/Profile";
 import Favorites from "./components/Favorites";
 import Podcasts from "./components/Podcasts";
-import ProtectedLayout from "./routes/ProtectedLayout";
-import AuthLayout from "./routes/AuthLayout";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <AuthLayout />,
+    element: <Root />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+    action: registerAction,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+    action: loginAction,
+  },
+  {
+    path: "/profile/:username",
+    element: <Profile />,
     children: [
       {
-        index: true,
-        element: <Root />,
+        path: "/profile/:username/favorites",
+        element: <Favorites />,
       },
       {
-        path: "/register",
-        element: <Register />,
-        action: registerAction,
-      },
-      {
-        path: "/login",
-        element: <Login />,
-      },
-      {
-        path: "/profile",
-        element: <ProtectedLayout />,
-        children: [
-          {
-            path: "/profile/:username",
-            element: <Profile />,
-            children: [
-              {
-                path: "/profile/:username/favorites",
-                element: <Favorites />,
-              },
-              {
-                path: "/profile/:username/podcasts",
-                element: <Podcasts />,
-              },
-            ],
-          },
-        ],
+        path: "/profile/:username/podcasts",
+        element: <Podcasts />,
       },
     ],
   },
