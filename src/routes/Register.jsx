@@ -1,35 +1,30 @@
 import { Form, redirect } from "react-router-dom";
-import "./App.css";
 
 export const action = async ({ request }) => {
   try {
-    const formData = await request.formData();
-    const username = formData.get("username");
-    const email = formData.get("email");
-    const password = formData.get("password");
-    console.log(username, email, password);
-    // await fetch("url", {
-    //   method: "POST",
-    //   mode: "cors",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     username: username,
-    //     email: email,
-    //     password: password,
-    //   }),
-    // });
-    return redirect("/home");
+    const formData = Object.fromEntries(await request.formData());
+    await fetch("http://localhost:8080/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+      }),
+      mode: "cors",
+    });
+    return redirect(`/login`);
   } catch (error) {
     console.error(error);
   }
 };
 
-function App() {
+function Root() {
   return (
-    <div className="App">
-      <Form method="post" action="/">
+    <div className="Root">
+      <Form method="post" action="/register">
         <fieldset
           style={{ display: "flex", flexDirection: "column", rowGap: 10 }}
         >
@@ -39,15 +34,26 @@ function App() {
             name="username"
             autoComplete="username"
             id="username"
+            required
+            defaultValue="asd"
           />
           <label htmlFor="email">email</label>
-          <input type="email" name="email" autoComplete="username" id="email" />
+          <input
+            type="email"
+            name="email"
+            autoComplete="email"
+            id="email"
+            required
+            defaultValue="asd@asd.com"
+          />
           <label htmlFor="password">password</label>
           <input
             type="password"
             name="password"
             autoComplete="current-password"
             id="password"
+            required
+            defaultValue="asd"
           />
           <button type="submit" style={{ backgroundColor: "lightblue" }}>
             Register
@@ -58,4 +64,4 @@ function App() {
   );
 }
 
-export default App;
+export default Root;

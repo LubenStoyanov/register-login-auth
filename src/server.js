@@ -6,11 +6,12 @@ import jwt from "jsonwebtoken";
 import cors from "cors";
 import bcrypt from "bcrypt";
 import connectDB, { User } from "./db.js";
+import validateToken from "./validateToken.js";
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-const privateKey = fs.readFileSync("private.key");
+export const privateKey = fs.readFileSync("private.key");
 const saltRounds = 10;
 
 app.use(helmet());
@@ -22,21 +23,8 @@ app.get("/", async (req, res) => {
   res.sendStatus(200);
 });
 
-const validateToken = (req, res, next) => {
-  const token = req.cookies.token;
-  console.log(token);
-  jwt.verify(token, privateKey, (err, username) => {
-    if (err) {
-      res.status(403).send("Token invalid");
-    } else {
-      req.username = username;
-      next();
-    }
-  });
-};
-
 app.post("/register", async (req, res) => {
-  console.log("here");
+  console.log("register");
   try {
     const { username, email, password } = req.body;
     const token = jwt.sign({ username: username }, privateKey);
@@ -48,10 +36,7 @@ app.post("/register", async (req, res) => {
       password: hashedPW,
       token: token,
     });
-    res
-      .status(200)
-      .cookie("jwt", token, { maxAge: 360000, httpOnly: true, secure: true })
-      .send("User registered");
+    res.status(201).json(token);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
@@ -59,19 +44,32 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
+  console.log("login");
   try {
     const { username, password } = req.body;
     connectDB();
-    const hashedPassword = await User.findOne({ username: username });
-    const loginVerified = bcrypt.compare(password, hashedPassword);
+    const user = await User.findOne({ username: username }, "password");
+    const loginVerified = await bcrypt.compare(password, user.password);
     if (!loginVerified) return res.status(401).send("Wrong Password");
     const token = jwt.sign({ username: username }, privateKey);
-    res
-      .status(200)
-      .cookie("jwt", token, { maxAge: 360000, httpOnly: true, secure: true });
+    await User.updateOne({ username: username }, { $set: { token: token } });
+    res.status(200).json(token);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
+  }
+});
+
+app.post("/logout", async (req, res) => {
+  try {
+    console.log("logout");
+    const { username, token } = req.body;
+    console.log(token);
+    await User.updateOne({ username: username }, { $set: { token: "" } });
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(404);
   }
 });
 

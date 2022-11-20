@@ -10,4 +10,4 @@ content-type: application/json
 ###
 
 GET http://localhost:8080/profile/Luben HTTP/1.1
-Set-Cookie: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhhbnMzIiwiaWF0IjoxNjY4Nzk1MzY5fQ.t9hWET2PFlwYo0OC-r1e1gAODFTgsqCc3MyxGGaToWE"
+Set-Cookie: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhhbnMzIiwiaWF0IjoxNjY4Nzk1MzY5fQ.t9hWET2PFlwYo0OC-r1e1gAODFTgsqCc3MyxGGaToWE
