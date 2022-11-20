@@ -18,6 +18,7 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+    errorElement: <div>User already exits.</div>,
     action: registerAction,
   },
   {

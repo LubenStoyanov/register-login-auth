@@ -1,18 +1,29 @@
-import { Form, redirect } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  Form,
+  json,
+  redirect,
+  useActionData,
+  useNavigate,
+} from "react-router-dom";
 import { register } from "../utils";
 
 export const action = async ({ request }) => {
   try {
     const formData = Object.fromEntries(await request.formData());
-    const response = register(formData);
-    if (!response.ok) return redirect("/");
-    return redirect(`/login`);
+    const response = await register(formData);
+
+    if (!response.ok) {
+      return json({ error: "Email already exists." });
+    }
+    return redirect("/login");
   } catch (error) {
     console.error(error);
   }
 };
 
 function Root() {
+  const actionData = useActionData();
   return (
     <div className="Root">
       <Form method="post" action="/register">
@@ -37,6 +48,9 @@ function Root() {
             required
             defaultValue="asd@asd.com"
           />
+          {actionData?.error ? (
+            <p style={{ color: "red" }}>{actionData.error}</p>
+          ) : null}
           <label htmlFor="password">password</label>
           <input
             type="password"
@@ -45,6 +59,8 @@ function Root() {
             id="password"
             required
             defaultValue="asd"
+            minLength={8}
+            onInvalid={() => "Please enter minium 8 chracters"}
           />
           <button type="submit" style={{ backgroundColor: "lightblue" }}>
             Register
