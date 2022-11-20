@@ -1,23 +1,11 @@
 import React from "react";
 import { Form, redirect } from "react-router-dom";
-import { setToken } from "../utils";
+import { login, setToken } from "../utils";
 
 export const action = async ({ request }) => {
   try {
     const formData = Object.fromEntries(await request.formData());
-    const res = await fetch("http://localhost:8080/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: formData.username,
-        password: formData.password,
-      }),
-      mode: "cors",
-    });
-    const token = await res.json();
-    setToken(token);
+    await login(formData);
     return redirect(`/profile/${formData.username}`);
   } catch (error) {
     console.error(error);

@@ -6,6 +6,7 @@ import Root from "./routes/Root";
 import Register, { action as registerAction } from "./routes/Register";
 import Login, { action as loginAction } from "./routes/Login";
 import Profile from "./routes/Profile";
+import { action as logoutAction } from "./routes/Logout";
 import Favorites from "./components/Favorites";
 import Podcasts from "./components/Podcasts";
 
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
   {
     path: "/profile/:username",
     element: <Profile />,
+    action: logoutAction,
     children: [
       {
         path: "/profile/:username/favorites",

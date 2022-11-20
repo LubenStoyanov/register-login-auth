@@ -1,23 +1,11 @@
 import { Form, redirect } from "react-router-dom";
+import { register } from "../utils";
 
 export const action = async ({ request }) => {
   try {
     const formData = Object.fromEntries(await request.formData());
-    const res = await fetch("http://localhost:8080/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      }),
-      mode: "cors",
-    });
-
-    console.log(res.ok);
-    if (!res.ok) return redirect("/");
+    const response = register(formData);
+    if (!response.ok) return redirect("/");
     return redirect(`/login`);
   } catch (error) {
     console.error(error);

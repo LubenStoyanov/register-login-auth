@@ -1,39 +1,21 @@
 import React from "react";
-import { Form, redirect, useNavigate } from "react-router-dom";
-import { setToken } from "../utils";
+import { Form, redirect } from "react-router-dom";
+import { logout, setToken } from "../utils";
 
 export const action = async ({ params }) => {
   try {
-    await fetch("http://localhost:8080/logout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: params.username }),
-      mode: "cors",
-    });
-
+    await logout(params);
     return redirect("/login");
   } catch (error) {
     console.error(error);
   }
 };
 
-export default function Logout({ username }) {
-  const navigate = useNavigate();
+export default function Logout() {
   return (
     <div>
       <Form method="post">
-        {/* <input style={{ display: "none" }} name={`${username}`} /> */}
-        <button
-          onClick={() => {
-            setToken(null);
-            navigate("/login");
-          }}
-          type="submit"
-        >
-          Logout
-        </button>
+        <button type="submit">Logout</button>
       </Form>
     </div>
   );
